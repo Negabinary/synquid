@@ -18,7 +18,7 @@ foldr :: <p :: List a -> b -> Bool> . <step :: a -> b -> b -> Bool> .
 		(x: a -> xs: (List a) -> acc: b -> nacc: b -> {Bool | p xs acc ==> step x acc nacc ==> p (Cons x xs) nacc}) ==>
     f: (x: a -> acc: b -> {b | step x acc _v}) ->
 		seed: {b | p Nil _v} ->
-    ys: List a ->    
+    ys: List a ->
 		{b | p ys _v}
 
 length :: xs: List a -> {Int | _v == len xs}

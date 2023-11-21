@@ -1,0 +1,27 @@
+data List a where
+	Nil :: List a
+	Cons :: x: a -> xs: List a -> List a
+  
+termination measure len :: List a -> {Int | _v >= 0} where
+  Nil -> 0
+  Cons x xs -> 1 + len xs  
+
+measure elems :: List a -> Set a where
+  Nil -> []
+  Cons x xs -> [x] + elems xs
+	
+foldr :: <p :: List a -> b -> Bool> . <step :: b -> a -> b -> Bool> .
+    g: (xs:List a -> acc:b -> x:a -> nacc:{b| p xs acc && step acc x _v} -> {b | _v == nacc && p (Cons x xs) nacc}) ->
+    f: (x: a -> acc: b -> {b | step acc x _v}) ->
+	seed: {b | p Nil _v} ->
+    ys: List a ->
+	{b | p ys _v}
+
+foldr = \g . \f . \seed . \ys . 
+    match ys with
+        Nil -> seed
+        Cons x3 x4 -> 
+            let u = foldr g f seed x4 in
+            let v = f x3 u in
+            g x4 u x3 v
+--foldr = ??
