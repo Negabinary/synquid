@@ -187,10 +187,32 @@ parseFuncDeclOrGoal = do
   (reservedOp "::" >> FuncDecl funcName <$> parseSchema) <|>
     (reservedOp "=" >> SynthesisGoal funcName <$> parseImpl)
 
+{- Bounds -}
+
+parseBound :: Parser RBound
+parseBound = parseBoundParameter <|> (BaseBound <$> parseFormula)
+
+parseBoundParameter :: Parser RBound
+parseBoundParameter = do
+  id <- parseIdentifier
+  reservedOp ":"
+  t <- parseBaseType
+  reservedOp "->"
+  rst <- parseBound
+  return $ Parameter id t rst
+  
+
 {- Types -}
 
 parseSchema :: Parser RSchema
-parseSchema = parseForall <|> (Monotype <$> parseType)
+parseSchema = parseForall <|> (parseBounded <|> (Monotype <$> parseType))
+
+parseBounded :: Parser RSchema
+parseBounded = do
+  bnd <- parseBound
+  reservedOp "==>"
+  sch <- parseSchema
+  return $ Bounded bnd sch
 
 parseForall :: Parser RSchema
 parseForall = do
@@ -231,15 +253,16 @@ parseTypeAtom = choice [
   parseListType
   ]
 
-parseUnrefTypeNoArgs = do
-  baseType <- parseBaseType
-  return $ ScalarT baseType ftrue
-  where
-    parseBaseType = choice [
+parseBaseType = choice [
       BoolT <$ reserved "Bool",
       IntT <$ reserved "Int",
       (\name -> DatatypeT name [][]) <$> parseTypeName,
       TypeVarT Map.empty <$> parseIdentifier]
+
+parseUnrefTypeNoArgs = do
+  baseType <- parseBaseType
+  return $ ScalarT baseType ftrue
+    
 
 parseUnrefTypeWithArgs = do
   name <- parseTypeName

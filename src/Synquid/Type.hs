@@ -129,11 +129,17 @@ varRefinement x s = Var s valueVarName |=| Var s x
 isVarRefinemnt (Binary Eq (Var _ v) (Var _ _)) = v == valueVarName
 isVarRefinemnt _ = False
 
+data Bound r = 
+  Parameter Id (BaseType r) (Bound r) |
+  BaseBound r
+  deriving (Show, Eq, Ord)
+
 -- | Polymorphic type skeletons (parametrized by refinements)
 data SchemaSkeleton r =
   Monotype (TypeSkeleton r) |
   ForallT Id (SchemaSkeleton r) |       -- Type-polymorphic
-  ForallP PredSig (SchemaSkeleton r)    -- Predicate-polymorphic
+  ForallP PredSig (SchemaSkeleton r) |  -- Predicate-polymorphic
+  Bounded (Bound r) (SchemaSkeleton r)
   deriving (Show, Eq, Ord)
 
 toMonotype :: SchemaSkeleton r -> TypeSkeleton r
@@ -231,6 +237,8 @@ type SSchema = SchemaSkeleton ()
 
 -- | Refined schemas
 type RSchema = SchemaSkeleton Formula
+
+type RBound = Bound Formula
 
 -- | Forget refinements of a type
 shape :: RType -> SType

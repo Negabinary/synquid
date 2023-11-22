@@ -177,7 +177,7 @@ defaultExplorerParams = ExplorerParams {
   _symmetryReduction = False,
   _context = id,
   _sourcePos = noPos,
-  _explorerLogLevel = 0
+  _explorerLogLevel = 10
 }
 
 -- | Parameters for constraint solving
@@ -189,7 +189,7 @@ defaultHornSolverParams = HornSolverParams {
   agressivePrune = True,
   candidatePickStrategy = InitializedWeakCandidate,
   constraintPickStrategy = SmallSpaceConstraint,
-  solverLogLevel = 0
+  solverLogLevel = 10
 }
 
 -- | Output format

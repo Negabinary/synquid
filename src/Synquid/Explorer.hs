@@ -580,6 +580,7 @@ instantiate env sch top argNames = do
   writeLog 3 (text "INSTANTIATE" <+> pretty sch $+$ text "INTO" <+> pretty t)
   return t
   where
+    -- TODO[Matt]: Do we need to do anything here?
     instantiate' subst pSubst (ForallT a sch) = do
       a' <- freshId "A"
       addConstraint $ WellFormed env (vart a' ftrue)

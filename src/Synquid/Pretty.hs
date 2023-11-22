@@ -263,11 +263,24 @@ instance Pretty RType where
   pretty = prettyType
 
 
-prettySchema :: Pretty (TypeSkeleton r) => SchemaSkeleton r -> Doc
+prettyBound :: Pretty r => Pretty (BaseType r) => Bound r -> Doc
+prettyBound bnd = case bnd of
+  Parameter id t bnd' -> pretty id <+> pretty t <+> prettyBound bnd'
+  BaseBound r -> pretty r
+
+instance Pretty (Bound ()) where
+  pretty = prettyBound
+
+instance Pretty RBound where
+  pretty = prettyBound
+
+
+prettySchema :: Pretty (TypeSkeleton r) => Pretty (Bound r) => SchemaSkeleton r -> Doc
 prettySchema sch = case sch of
   Monotype t -> pretty t
   ForallT a sch' -> hlAngles (text a) <+> operator "." <+> prettySchema sch'
   ForallP sig sch' -> pretty sig <+> operator "." <+> prettySchema sch'
+  Bounded b sch' -> pretty b <+> operator "==>" <+> prettySchema sch'
 
 instance Pretty SSchema where
   pretty = prettySchema
