@@ -17,11 +17,18 @@ foldr :: <p :: List a -> b -> Bool> . <step :: b -> a -> b -> Bool> .
     ys: List a ->
 	{b | p ys _v}
 
+-- foldr = \g . \f . \seed . \ys . 
+--     match ys with
+--         Nil -> seed
+--         Cons x3 x4 -> 
+--             let u = foldr g f seed x4 in
+--             let v = f x3 u in
+--             g x4 u x3 v
+
 foldr = \g . \f . \seed . \ys . 
     match ys with
         Nil -> seed
         Cons x3 x4 -> 
-            let u = foldr g f seed x4 in
-            let v = f x3 u in
-            g x4 u x3 v
+            g x4 (foldr g f seed x4) x3 (f x3 (foldr g f seed x4))
+
 --foldr = ??

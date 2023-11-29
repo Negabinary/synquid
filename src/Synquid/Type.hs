@@ -146,6 +146,7 @@ toMonotype :: SchemaSkeleton r -> TypeSkeleton r
 toMonotype (Monotype t) = t
 toMonotype (ForallT _ t) = toMonotype t
 toMonotype (ForallP _ t) = toMonotype t
+toMonotype (Bounded _ t) = toMonotype t
 
 boundVarsOf :: SchemaSkeleton r -> [Id]
 boundVarsOf (ForallT a sch) = a : boundVarsOf sch

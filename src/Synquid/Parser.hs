@@ -190,25 +190,33 @@ parseFuncDeclOrGoal = do
 {- Bounds -}
 
 parseBound :: Parser RBound
-parseBound = parseBoundParameter <|> (BaseBound <$> parseFormula)
+parseBound = do
+  firstParam <- parseBoundParameter
+  params <- many (do
+      reservedOp ","
+      p <- parseBoundParameter
+      return p
+    )
+  reservedOp "."
+  base <- (BaseBound <$> braces parseFormula)
+  return $ foldr (\(x,t) -> \b -> Parameter x t b ) base (firstParam:params)
 
-parseBoundParameter :: Parser RBound
+parseBoundParameter :: Parser (Id, BaseType r)
 parseBoundParameter = do
   id <- parseIdentifier
   reservedOp ":"
   t <- parseBaseType
-  reservedOp "->"
-  rst <- parseBound
-  return $ Parameter id t rst
+  return $ (id, t)
   
 
 {- Types -}
 
 parseSchema :: Parser RSchema
-parseSchema = parseForall <|> (parseBounded <|> (Monotype <$> parseType))
+parseSchema = parseForall <|> parseBounded <|> (Monotype <$> parseType)
 
 parseBounded :: Parser RSchema
 parseBounded = do
+  reserved "forall"
   bnd <- parseBound
   reservedOp "==>"
   sch <- parseSchema

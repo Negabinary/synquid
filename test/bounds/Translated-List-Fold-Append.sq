@@ -1,6 +1,6 @@
 data List a where
-    Nil :: List a
-    Cons :: x: a -> xs: List a -> List a
+	Nil :: List a
+	Cons :: x: a -> xs: List a -> List a
   
 termination measure len :: List a -> {Int | _v >= 0} where
   Nil -> 0
@@ -10,16 +10,6 @@ measure elems :: List a -> Set a where
   Nil -> []
   Cons x xs -> [x] + elems xs
 	
-zero :: {Int | _v == 0}
-inc :: x: Int -> {Int | _v == 1 + x}
-dec :: x: Int -> {Int | _v == x - 1}	
-
-sinc :: a -> x:Int -> {Int | _v == 1 + x}
-
-top :: {Bool | _v}
-
-qualifier {x == y, x == y + 1}
-
 foldr :: <p :: List a -> b -> Bool> . <step :: b -> a -> b -> Bool> .
     g: (xs:List a -> acc:b -> x:a -> nacc:{b| p xs acc && step acc x _v} -> {b | _v == nacc && p (Cons x xs) nacc}) ->
     f: (x: a -> acc: b -> {b | step acc x _v}) ->
@@ -27,6 +17,8 @@ foldr :: <p :: List a -> b -> Bool> . <step :: b -> a -> b -> Bool> .
     ys: List a ->
 	{b | p ys _v}
 
-length :: xs: List a -> {Int | _v == len xs}
-length = \xs. foldr (\x1. \x2. \x3. \x4. x4) sinc 0 xs
---length = ??
+append :: xs: List a -> ys: List a -> {List a | len _v == len xs + len ys}
+
+-- append = \xs . \ys . foldr (\x1. \x2. \x3. \x4. x4) Cons xs ys
+
+append = ??
