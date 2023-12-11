@@ -11,8 +11,8 @@ measure elems :: List a -> Set a where
   Cons x xs -> [x] + elems xs
 	
 foldr :: <p :: List a -> b -> Bool> . <step :: a -> b -> b -> Bool> .
-    forall a : a , b : b. {true} ==>
---  forall x: a, xs: List a, acc: b, nacc: b, {p xs acc ==> step x acc nacc ==> p (Cons x xs) nacc} ==>
+    -- forall a : a , xs: List a, acc: b, nacc: b. {True} ==>
+    forall x: a, xs: List a, acc: b, nacc: b. {p xs acc ==> step x acc nacc ==> p (Cons x xs) nacc} ==>
     f: (x: a -> acc: b -> {b | step x acc _v}) ->
 		seed: {b | p Nil _v} ->
     ys: List a ->    

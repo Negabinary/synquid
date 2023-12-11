@@ -1,0 +1,24 @@
+type Nat = {Int | _v >= 0}
+
+zero :: {Int | _v == 0}
+inc :: x: Int -> {Int | _v == x + 1}
+dec :: x: Int -> {Int | _v == x - 1}
+
+-- applyn :: <p :: Int -> Int -> Bool> . <step :: Int -> Int -> Bool> .
+--     forall acc: Int, n: Nat, nacc: Int. {p n acc ==> step acc nacc ==> p (n+1) nacc} ==>
+--     f: (x:Int -> {Int| step x _v}) ->
+--     seed: {Int | p 0 _v} ->
+--     n: Nat ->
+--     {Int | p n _v}
+
+-- applyn = \g. \f. \seed. \n. 
+--   if n == 0 then
+--     seed
+--   else
+--     g seed (dec n) (f (applyn g f seed (dec n)))
+
+
+
+
+fib :: <p:: Int -> Int -> Bool>. forall n1: Nat, n2: Nat, n3:Nat, r1: Nat, r2: Nat, r3: Nat. {p n1 r1 ==> p n2 r2 ==> n3 == n1 + 2 ==> n3 == n1 + 1 ==> (p n3 r3) && r3 == r1 + r2} ==> x:Nat -> {Int| p x _v}
+fib = ??
