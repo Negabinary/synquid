@@ -222,6 +222,7 @@ data Environment = Environment {
   _symbols :: Map Int (Map Id RSchema),    -- ^ Variables and constants (with their refinement types), indexed by arity
   _boundTypeVars :: [Id],                  -- ^ Bound type variables
   _boundPredicates :: [PredSig],           -- ^ Argument sorts of bound abstract refinements
+  _bounds :: Map Id RSchema,
   _assumptions :: Set Formula,             -- ^ Unknown assumptions
   _shapeConstraints :: Map Id SType,       -- ^ For polymorphic recursive calls, the shape their types must have
   _usedScrutinees :: [RProgram],           -- ^ Program terms that has already been scrutinized
@@ -249,6 +250,7 @@ emptyEnv = Environment {
   _symbols = Map.empty,
   _boundTypeVars = [],
   _boundPredicates = [],
+  _bounds = Map.empty,
   _assumptions = Set.empty,
   _shapeConstraints = Map.empty,
   _usedScrutinees = [],
@@ -350,6 +352,9 @@ addConstant name t = addPolyConstant name (Monotype t)
 -- | 'addPolyConstant' @name sch env@ : add type binding @name@ :: @sch@ to @env@
 addPolyConstant :: Id -> RSchema -> Environment -> Environment
 addPolyConstant name sch = addPolyVariable name sch . (constants %~ Set.insert name)
+
+addBound :: Id -> RSchema -> Environment -> Environment
+addBound name sch = bounds %~ Map.insert name sch
 
 addLetBound :: Id -> RType -> Environment -> Environment
 addLetBound name t = addVariable name t . (letBound %~ Set.insert name)

@@ -3,6 +3,7 @@
 module Main where
 
 import Synquid.Logic
+import Synquid.Bounds
 import Synquid.Type
 import Synquid.Program
 import Synquid.Error
@@ -256,7 +257,7 @@ runOnFile synquidParams explorerParams solverParams file libs = do
       mProg <- synthesize explorerParams solverParams goal cquals tquals
       case mProg of
         Left typeErr -> pdoc (pretty typeErr) >> pdoc empty >> exitFailure
-        Right prog -> do
+        Right prog' -> let prog = untranslate goal prog' in do
           when (gSynthesize goal) $ pdoc (prettySolution goal prog) >> pdoc empty          
           return (goal, prog)
     printStats results declsByFile = do

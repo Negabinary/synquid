@@ -85,4 +85,8 @@ untransWhole g p = case (Map.lookup (gName g) (_bounds (gEnvironment g))) of
     Nothing -> p
 
 untranslate :: Goal -> RProgram -> RProgram
-untranslate goal x = x --untransWhole goal . untransUsages goal
+untranslate goal = untransWhole goal . untransUsages goal
+  -- let symbols = symbolsOf p in
+  -- let bounded_symbols = Data.Set.filter (swap Map.member (_bounds (gEnvironment g))) symbols in
+  -- Data.Set.foldr (\bs -> \acc -> Program (PFun bs acc) AnyT) (Program (PSymbol dontCare) AnyT) bounded_symbols
+  -- 

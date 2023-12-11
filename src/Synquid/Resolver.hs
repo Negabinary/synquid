@@ -4,6 +4,7 @@
 module Synquid.Resolver (resolveDecls, resolveRefinement, resolveRefinedType, addAllVariables, ResolverState (..), instantiateSorts) where
 
 import Synquid.Logic
+import Synquid.Bounds
 import Synquid.Type
 import Synquid.Program
 import Synquid.Error
@@ -641,10 +642,16 @@ solveSortConstraints = do
         VarS _ -> return ()
         _ -> throwResError $ text "Sort" <+> pretty s' <+> text "is not ordered"
 
-addNewSignature name sch = do
-  ifM (Set.member name <$> use (environment . constants)) (throwResError $ text "Duplicate declaration of function" <+> text name) (return ())
-  environment %= addPolyConstant name sch
-  environment %= addUnresolvedConstant name sch
+addNewSignature name sch = case (translateBounded sch) of
+  Nothing -> do
+    ifM (Set.member name <$> use (environment . constants)) (throwResError $ text "Duplicate declaration of function" <+> text name) (return ())
+    environment %= addPolyConstant name sch
+    environment %= addUnresolvedConstant name sch
+  Just tsch -> do
+    ifM (Set.member name <$> use (environment . constants)) (throwResError $ text "Duplicate declaration of function" <+> text name) (return ())
+    environment %= addPolyConstant name tsch
+    environment %= addUnresolvedConstant name tsch
+    environment %= addBound name sch
 
 substituteTypeSynonym name tArgs = do
   tss <- use $ environment . typeSynonyms
