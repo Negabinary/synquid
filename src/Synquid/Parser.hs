@@ -201,18 +201,23 @@ parseBound = do
   base <- (BaseBound <$> braces parseFormula)
   return $ foldr (\(x,t) -> \b -> Parameter x t b ) base (firstParam:params)
 
-parseBoundParameter :: Parser (Id, BaseType r)
+parseBoundParameter :: Parser (Id, BaseType Formula)
 parseBoundParameter = do
   id <- parseIdentifier
   reservedOp ":"
-  t <- parseBaseType
-  return $ (id, t)
+  ScalarT baseType _ <- parseScalarUnrefType
+  return $ (id, baseType)
   
 
 {- Types -}
 
 parseSchema :: Parser RSchema
-parseSchema = parseForall <|> parseBounded <|> (Monotype <$> parseType)
+parseSchema = do
+  s <- parseSchema'
+  return s
+  where
+    parseSchema' :: Parser RSchema
+    parseSchema' = parseForall <|> parseBounded <|> (Monotype <$> parseType)
 
 parseBounded :: Parser RSchema
 parseBounded = do
